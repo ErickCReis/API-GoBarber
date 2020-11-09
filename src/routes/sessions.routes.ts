@@ -25,7 +25,7 @@ sessionsRouter.post('/', async (request, response) => {
 
     return response.status(201).json({ userWithoutPassword, token });
   } catch (err) {
-    return response.status(400).json({ message: err.message });
+    return response.status(err.statusCode).json({ message: err.message });
   }
 });
 
