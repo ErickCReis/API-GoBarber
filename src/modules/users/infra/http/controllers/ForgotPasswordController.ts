@@ -5,7 +5,7 @@ import SendForgotPaswordEmailService from '@modules/users/services/SendForgotPas
 
 export default class ForgotPasswodController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { email, password } = request.body;
+    const { email } = request.body;
 
     const sendForgotPasswordEmail = container.resolve(
       SendForgotPaswordEmailService,
