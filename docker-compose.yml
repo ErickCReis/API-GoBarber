@@ -1,0 +1,27 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: gobarber-db
+    image: postgres
+    restart: always
+    ports:
+      - 5432:${POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+
+  mongo:
+    container_name: gobarber-notification
+    image: mongo
+    restart: always
+    ports:
+      - 27017:${MONGO_PORT}
+
+  redis:
+    container_name: gobarber-cache
+    image: redis
+    restart: always
+    ports:
+      - 6379:${REDIS_PORT}
