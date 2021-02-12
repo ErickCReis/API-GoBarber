@@ -1,0 +1,48 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Instalar dependẽncias NPM
+      - name: Install dependencies
+        run: npm install
+
+      # Executar a build
+      - name: Run build
+        run: npm run build
+
+      # Copiar código para a AWS
+      - name: Copy dist to AWS EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          source: '.,!node_modules'
+          target: '~/app/API-GoBarber/'
+
+      # Executar 'npm i' na AWS
+      # Executar as migration do TypeORM
+      # Restart servidor Node
