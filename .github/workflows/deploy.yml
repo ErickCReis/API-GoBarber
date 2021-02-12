@@ -26,14 +26,14 @@ jobs:
 
       # Instalar dependẽncias NPM
       - name: Install dependencies
-        run: npm install
+        run: npm i
 
       # Executar a build
       - name: Run build
         run: npm run build
 
       # Copiar código para a AWS
-      - name: Copy dist to AWS EC2
+      - name: Copy dist to AWS
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -44,5 +44,35 @@ jobs:
           target: '~/app/API-GoBarber/'
 
       # Executar 'npm i' na AWS
+      - name: Install dependencies on AWS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/app/API-GoBarber
+            npm i
+
       # Executar as migration do TypeORM
+      - name: Run migrations on AWS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/app/API-GoBarber
+            ./node_modules/.bin/typeorm migration:run
+
       # Restart servidor Node
+      - name: Restart Node server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: pm2 restart gobarber-api
