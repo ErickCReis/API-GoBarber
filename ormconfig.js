@@ -1,18 +1,16 @@
-const postgresEntities = process.env.TYPEORM_IN_PRODUCTION
-  ? ['./dist/modules/**/infra/typeorm/entities/*.js']
-  : ['./src/modules/**/infra/typeorm/entities/*.ts'];
-
-const postgresMigrations = process.env.TYPEORM_IN_PRODUCTION
-  ? ['./dist/shared/infra/typeorm/migrations/*.js']
-  : ['./src/shared/infra/typeorm/migrations/*.ts'];
-
-const postgresMigrationsDir = process.env.TYPEORM_IN_PRODUCTION
-  ? './dist/shared/infra/typeorm/migrations'
-  : './src/shared/infra/typeorm/migrations';
-
-const mongoEntities = process.env.TYPEORM_IN_PRODUCTION
-  ? ['./dist/modules/**/infra/typeorm/schemas/*.js']
-  : ['./src/modules/**/infra/typeorm/schemas/*.ts'];
+const typeormConfigs = process.env.TYPEORM_IN_PRODUCTION
+  ? {
+      postgresEntities: ['./dist/modules/**/infra/typeorm/entities/*.js'],
+      postgresMigrations: ['./dist/shared/infra/typeorm/migrations/*.js'],
+      postgresMigrationsDir: './dist/shared/infra/typeorm/migrations',
+      mongoEntities: ['./dist/modules/**/infra/typeorm/schemas/*.js']
+    }
+  : {
+      postgresEntities: ['./src/modules/**/infra/typeorm/entities/*.ts'],
+      postgresMigrations: ['./src/shared/infra/typeorm/migrations/*.ts'],
+      postgresMigrationsDir: './src/shared/infra/typeorm/migrations',
+      mongoEntities: ['./src/modules/**/infra/typeorm/schemas/*.ts']
+    };
 
 module.exports = [
  {
@@ -23,10 +21,10 @@ module.exports = [
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
-  entities: postgresEntities,
-  migrations: postgresMigrations,
+  entities: typeormConfigs.postgresEntities,
+  migrations: typeormConfigs.postgresMigrations,
   cli: {
-    'migrationsDir': postgresMigrationsDir
+    'migrationsDir': typeormConfigs.postgresMigrationsDir
   }
  },
  {
@@ -38,6 +36,6 @@ module.exports = [
   password: process.env.MONGO_PASSWORD,
   database: process.env.MONGO_DATABASE,
   useUnifiedTopology: true,
-  entities: mongoEntities
+  entities: typeormConfigs.mongoEntities
  }
 ]
